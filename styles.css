@@ -134,13 +134,16 @@ h1 {
 }
 
 .name p{
-        font-size:2rem;
+        font-size:5rem;
+        font-weight: bold;
+    
 }
 
 .name img{
-    width: 30px;
-    height:30px;
+    width: 50px;
+    height:50px;
     object-fit: contain;
+
 }
 
 .user-info-container p[data-temp] {

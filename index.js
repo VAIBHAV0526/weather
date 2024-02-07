@@ -7,6 +7,7 @@ const grantAccessContainer = document.querySelector(".grant-location-container")
 const searchForm = document.querySelector("[data-searchForm]");
 const loadingScreen = document.querySelector(".loading-container");
 const userInfoContainer = document.querySelector(".user-info-container");
+let  wrapper = document.querySelector(".wrapper");
 
 //initially vairables need????
 
@@ -51,6 +52,7 @@ searchTab.addEventListener("click", () => {
 //check if cordinates are already present in session storage
 function getfromSessionStorage() {
     const localCoordinates = sessionStorage.getItem("user-coordinates");
+    console.log(sessionStorage);
     if(!localCoordinates) {
         //agar local coordinates nahi mile
         grantAccessContainer.classList.add("active");
@@ -68,17 +70,23 @@ async function fetchUserWeatherInfo(coordinates) {
     grantAccessContainer.classList.remove("active");
     //make loader visible
     loadingScreen.classList.add("active");
-
+    wrapper.style="background-image: linear-gradient(160deg, #112d4e 0%, #3f72af 100%)";
     //API CALL
     try {
         const response = await fetch(
             `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
           );
+       
         const  data = await response.json();
 
-        loadingScreen.classList.remove("active");
+        const fetchimages=   fetch(`https://api.unsplash.com/photos/random?query=${data?.weather?.[0]?.main}`);
+        //wrapper.style="background-image: linear-gradient(160deg, #112d4e 0%, #3f72af 100%)";
+        wrapper.style="background-image: url(fetchimages)";
         userInfoContainer.classList.add("active");
-        renderWeatherInfo(data);
+        
+       // wrapper.loading='lazy';
+    renderWeatherInfo(data);
+       loadingScreen.classList.remove("active");
     }
     catch(err) {
         loadingScreen.classList.remove("active");
@@ -88,7 +96,7 @@ async function fetchUserWeatherInfo(coordinates) {
 
 }
 
-function renderWeatherInfo(weatherInfo) {
+ function  renderWeatherInfo(weatherInfo) {
     //fistly, we have to fethc the elements 
 
     const cityName = document.querySelector("[data-cityName]");
@@ -99,6 +107,7 @@ function renderWeatherInfo(weatherInfo) {
     const windspeed = document.querySelector("[data-windspeed]");
     const humidity = document.querySelector("[data-humidity]");
     const cloudiness = document.querySelector("[data-cloudiness]");
+    wrapper.style="background-image: url('https://source.unsplash.com/1600x900/?"+weatherInfo?.weather?.[0]?.main+"')";
 
     console.log(weatherInfo);
 
@@ -111,6 +120,8 @@ function renderWeatherInfo(weatherInfo) {
     windspeed.innerText = `${weatherInfo?.wind?.speed} m/s`;
     humidity.innerText = `${weatherInfo?.main?.humidity}%`;
     cloudiness.innerText = `${weatherInfo?.clouds?.all}%`;
+    return true
+
 }
 
 function getLocation() {
@@ -158,10 +169,15 @@ async function fetchSearchWeatherInfo(city) {
         const response = await fetch(
             `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
           );
+        
         const data = await response.json();
-        loadingScreen.classList.remove("active");
+        
         userInfoContainer.classList.add("active");
         renderWeatherInfo(data);
+        console.log(wrapper.style);
+       
+        
+        loadingScreen.classList.remove("active");
     }
     catch(err) {
         //hW
